@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>سلة المشتريات - AL_rahike</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;padding:20px;color:#111}
+    .container{max-width:900px;margin:0 auto}
+    table{width:100%;border-collapse:collapse;margin-top:18px}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+    .qty-input{width:56px}
+    .total-row{font-weight:700;text-align:right}
+    .btn{padding:10px 14px;border:0;border-radius:6px;cursor:pointer}
+    .btn-primary{background:#9b2a2a;color:#fff}
+    .btn-danger{background:#333;color:#fff}
+    .form-group{margin-bottom:10px}
+    label{display:block;margin-bottom:6px}
+    input,textarea{width:100%;padding:8px;border:1px solid #ddd;border-radius:4px}
+    .empty{padding:30px;text-align:center;color:#666}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>سلة المشتريات</h1>
+    <div id="cartArea"></div>
+
+    <h2>معلومات المشتري</h2>
+    <form id="checkoutForm">
+      <div class="form-group">
+        <label>الاسم الكامل</label>
+        <input type="text" id="fullname" required>
+      </div>
+      <div class="form-group">
+        <label>العنوان</label>
+        <textarea id="address" rows="2" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>رقم الهاتف</label>
+        <input type="tel" id="phone" required>
+      </div>
+      <button type="submit" class="btn btn-primary">تأكيد الطلب و الدفع</button>
+      <a href="index.html.html" id="clearCart" class="btn btn-danger" style="margin-left:8px">الصفح الرءسية </a>
+    </form>
+
+    <div id="message" style="margin-top:16px"></div>
+  </div>
+
+<script>
+  const CART_KEY = 'al_rahike_cart_v1';
+
+  function readCart(){ try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
+  function writeCart(cart){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); renderCart(); }
+
+  function formatPrice(n){ return n.toLocaleString() + ' DH'; }
+
+  function renderCart(){
+    const area = document.getElementById('cartArea');
+    const cart = readCart();
+    if (!cart || cart.length === 0) {
+      area.innerHTML = '<div class="empty">السلة فارغة — أضف منتجات من الصفحة الرئيسية.</div>';
+      return;
+    }
+
+    let html = '<table><thead><tr><th>المنتج</th><th>سعر الوحدة</th><th>كمية</th><th>المجموع</th><th></th></tr></thead><tbody>';
+    cart.forEach((it, idx) => {
+      const lineTotal = (it.price || 0) * (it.qty || 1);
+      html += `<tr data-idx="${idx}">
+        <td>${escapeHtml(it.name)}</td>
+        <td>${formatPrice(it.price)}</td>
+        <td><input class="qty-input" type="number" min="1" value="${it.qty || 1}" data-idx="${idx}"></td>
+        <td class="line-total">${formatPrice(lineTotal)}</td>
+        <td><button class="remove-btn" data-idx="${idx}">حذف</button></td>
+      </tr>`;
+    });
+    const subtotal = cart.reduce((s,i) => s + (i.price * (i.qty||1)), 0);
+    html += `</tbody></table>
+      <div class="total-row" style="margin-top:12px">المجموع: <strong id="subtotal">${formatPrice(subtotal)}</strong></div>`;
+    area.innerHTML = html;
+
+    // ربط أحداث تغيير الكمية و الحذف
+    document.querySelectorAll('.qty-input').forEach(inp => {
+      inp.addEventListener('change', (e) => {
+        const idx = parseInt(e.target.dataset.idx,10);
+        const newQty = Math.max(1, parseInt(e.target.value || '1',10));
+        const cart = readCart();
+        cart[idx].qty = newQty;
+        writeCart(cart);
+      });
+    });
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.target.dataset.idx,10);
+        let cart = readCart();
+        cart.splice(idx,1);
+        writeCart(cart);
+      });
+    });
+  }
+
+  // عند إرسال النموذج: هنا نطبع تأكيد مؤقت — يمكنك تعديل لإرسال إلى الخادم
+  document.getElementById('checkoutForm').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const cart = readCart();
+    if (!cart.length) {
+      showMessage('السلة فارغة', true);
+      return;
+    }
+    const name = document.getElementById('fullname').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
+    if (!name || !address || !phone) {
+      showMessage('يرجى ملء جميع الحقول', true);
+      return;
+    }
+
+    const subtotal = cart.reduce((s,i) => s + (i.price * (i.qty||1)), 0);
+
+    // هنا من المفترض أن ترسل الطلب لخادمك. حالياً نعرض تأكيداً و نفرغ السلة.
+    const orderSummary = {
+      name, address, phone, subtotal, items: cart, date: new Date().toISOString()
+    };
+
+    // مؤقت: نضع الطلب في localStorage في مفتاح آخر (يمكن حذفه)
+    localStorage.setItem('lastOrder_al_rahike', JSON.stringify(orderSummary));
+
+    // تفعيل رسالة تأكيدية
+    showMessage('تم إرسال طلبك! المجموع: ' + formatPrice(subtotal) + '. شكراً لك.');
+
+    // تفريغ السلة
+    localStorage.removeItem(CART_KEY);
+    renderCart();
+  });
+
+  document.getElementById('clearCart').addEventListener('click', () => {
+    if (confirm('هل ترغب فعلاً بتفريغ السلة؟')) {
+      localStorage.removeItem(CART_KEY);
+      renderCart();
+      showMessage('تم تفريغ السلة.');
+    }
+  });
+
+  function showMessage(txt, isError=false){
+    const d = document.getElementById('message');
+    d.textContent = txt;
+    d.style.color = isError ? 'crimson' : 'green';
+    setTimeout(() => { d.textContent=''; }, 6000);
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+
+  // initial render
+  renderCart();
+</script>
+</body>
+</html>
