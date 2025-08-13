@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>al_rahike — of akfane</title>
   <style>
+  .products h2,
+  .products h3 {
+    text-align: left;
+    margin-left: 100;
+  }
     :root {
       --bg: #ffffff;
       --muted: #888;
@@ -36,12 +41,11 @@
       padding: 22px 20px;
     }
     .brand img {
-      width: 150px; /* ou la taille que tu veux */
+      width: 150px;
       height: 150px;
       border-radius: 6px;
       object-fit: cover;
     }
-
     .brand {
       display: flex;
       align-items: center;
@@ -191,10 +195,9 @@
     }
     @media (max-width: 520px) {
       .products {
-        grid-template-columns: 1fr;
-      }
-      nav {
-        display: none;
+        grid-template-columns: repeat(4, 1fr);
+        justify-items: start; /* أو center إذا تريدها بالوسط */
+        padding-left: 100px; /* مسافة إضافية من اليسار */
       }
       .topbar {
         padding: 14px;
@@ -239,15 +242,14 @@
       position: relative;
       display: inline-flex;
       width: 50px;
-      height: 3650x;
+      height: 36px;
       border-radius: 6px;
       background: transparent;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 40px; /* تكبير الإيموجي */
+      font-size: 40px;
     }
-
     .cart-badge {
       position: absolute;
       top: -6px;
