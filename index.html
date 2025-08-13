@@ -195,10 +195,12 @@
     }
     @media (max-width: 520px) {
       .products {
-        grid-template-columns: repeat(4, 1fr);
-        justify-items: start; /* أو center إذا تريدها بالوسط */
-        padding-left: 100px; /* مسافة إضافية من اليسار */
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        justify-items: center;
+        padding-left: 0;
       }
+
       .topbar {
         padding: 14px;
       }
