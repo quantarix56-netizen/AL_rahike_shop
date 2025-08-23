@@ -16,6 +16,9 @@
       --container: 1200px;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       --transition: all 0.3s ease;
+      --success: #4CAF50;
+      --error: #f44336;
+      --warning: #ff9800;
     }
 
     * {
@@ -205,12 +208,19 @@
       font-weight: 500;
     }
 
-    .form-group input, .form-group textarea {
+    .form-group input, .form-group textarea, .form-group select {
       width: 100%;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--accent);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(60, 54, 51, 0.1);
     }
 
     .checkout-btn {
@@ -224,10 +234,16 @@
       cursor: pointer;
       margin-top: 10px;
       transition: var(--transition);
+      font-size: 16px;
     }
 
     .checkout-btn:hover {
       background: #7a2121;
+    }
+
+    .checkout-btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
     }
 
     .cart-items {
@@ -483,7 +499,7 @@
       background: #25D366;
     }
 
-    /* Modal styles */
+    /* Modal styles - محسّنة */
     .modal {
       display: none;
       position: fixed;
@@ -495,30 +511,83 @@
       z-index: 2000;
       align-items: center;
       justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+      opacity: 1;
     }
 
     .modal-content {
       background-color: white;
       padding: 30px;
-      border-radius: 8px;
+      border-radius: 12px;
       width: 90%;
       max-width: 500px;
       text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      color: var(--accent);
+    }
+
+    .modal-icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    .modal-success .modal-icon {
+      color: var(--success);
+    }
+
+    .modal-error .modal-icon {
+      color: var(--error);
+    }
+
+    .modal-warning .modal-icon {
+      color: var(--warning);
     }
 
     .modal h2 {
       margin-bottom: 15px;
-      color: #7a2121;
+      color: var(--accent);
+      font-size: 24px;
     }
 
     .modal p {
       margin-bottom: 20px;
+      line-height: 1.6;
+      color: var(--muted);
     }
 
     .modal-buttons {
       display: flex;
       gap: 10px;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .modal-btn {
@@ -527,6 +596,8 @@
       border-radius: 4px;
       cursor: pointer;
       font-weight: 500;
+      transition: var(--transition);
+      min-width: 100px;
     }
 
     .modal-btn-primary {
@@ -534,12 +605,137 @@
       color: white;
     }
 
+    .modal-btn-primary:hover {
+      background: #7a2121;
+    }
+
     .modal-btn-secondary {
-      background: #ddd;
+      background: #f0f0f0;
       color: #333;
     }
 
-    /* Responsive Design */
+    .modal-btn-secondary:hover {
+      background: #ddd;
+    }
+
+    /* تحسينات للهواتف */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1500;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    .mobile-nav {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100%;
+      background: white;
+      z-index: 1600;
+      padding: 60px 20px 20px;
+      transition: right 0.3s ease;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-nav.active {
+      right: 0;
+    }
+
+    .close-menu {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .mobile-nav ul {
+      list-style: none;
+    }
+
+    .mobile-nav ul li {
+      margin-bottom: 15px;
+    }
+
+    .mobile-nav ul li a {
+      display: block;
+      padding: 10px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    .mobile-nav ul li a:hover {
+      background: var(--accent-2);
+    }
+
+    /* تحسينات التحميل */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 2100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid var(--accent-2);
+      border-top: 5px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* تحسينات للعناصر التفاعلية */
+    .form-error {
+      color: var(--error);
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .form-group.error input,
+    .form-group.error textarea,
+    .form-group.error select {
+      border-color: var(--error);
+    }
+
+    .form-group.error .form-error {
+      display: block;
+    }
+
+    /* تحسينات للاستجابة */
     @media (max-width: 992px) {
       main {
         padding-top: 150px;
@@ -557,21 +753,55 @@
       .checkout-container {
         grid-template-columns: 1fr;
       }
+
+      .modal-content {
+        padding: 20px;
+      }
     }
 
     @media (max-width: 768px) {
       .topbar {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 15px;
+      }
+      
+      .brand {
+        flex: 1;
+        gap: 10px;
+      }
+      
+      .brand img {
+        width: 50px;
+        height: 50px;
+      }
+      
+      .brand-text h1 {
+        font-size: 18px;
+        margin-bottom: 3px;
+      }
+      
+      .brand-text p {
+        font-size: 10px;
+      }
+      
+      .hamburger-menu {
+        order: -1;
+        margin-left: 0;
+      }
+      
+      .cart-wishlist {
+        margin-right: auto;
+        margin-left: 15px;
       }
       
       nav ul {
-        gap: 15px;
+        display: none;
       }
       
       main {
-        padding-top: 180px;
+        padding-top: 140px;
       }
 
       .cart-item {
@@ -584,18 +814,39 @@
         justify-content: space-between;
         width: 100%;
       }
+
+      .modal-buttons {
+        flex-direction: column;
+      }
+
+      .modal-btn {
+        width: 100%;
+      }
     }
 
     @media (max-width: 576px) {
-      nav ul {
-        gap: 10px;
+      .topbar {
+        padding: 8px 10px;
       }
       
-      nav a {
-        font-size: 14px;
+      .brand {
+        gap: 8px;
       }
       
-      .cart-icon span {
+      .brand img {
+        width: 45px;
+        height: 45px;
+      }
+      
+      .brand-text h1 {
+        font-size: 16px;
+      }
+      
+      .brand-text p {
+        font-size: 9px;
+      }
+      
+      .cart-icon span.text {
         display: none;
       }
       
@@ -613,40 +864,76 @@
         flex-direction: column;
         align-items: center;
       }
+
+      .floating-buttons {
+        bottom: 10px;
+        left: 10px;
+      }
+
+      .floating-button {
+        width: 45px;
+        height: 45px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .brand-text h1 {
+        font-size: 14px;
+      }
+      
+      .brand img {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .cart-icon {
+        font-size: 14px;
+      }
+      
+      .cart-badge {
+        top: -6px;
+        left: -6px;
+        font-size: 9px;
+        padding: 1px 4px;
+      }
     }
   </style>
 </head>
 <body>
-  <header id="mainHeader">
-    <div class="topbar">
-      <div class="brand">
-        <img src="/logo.jpeg" alt="شعار الرحيق" />
-        <div>
-          <h1>الرحيق</h1>
-          <p>من أكفان</p>
-        </div>
-      </div>
-      
-      <nav>
-        <ul>
-          <li><a href="index.html">المتجر</a></li>
-          <li><a href="kafane.html">الأكفان</a></li>
-          <li><a href="#">القرآن</a></li>
-        </ul>
-      </nav>
-      
-      <div class="cart-wishlist">
-        <a href="#" class="wishlist-icon" title="المفضلة">
-          <span>♥</span>
-        </a>
-        <a id="cartLink" href="cart.html" class="cart-icon" title="سلة المشتريات">
-          <span>🛒</span>
-          <span>السلة</span>
-          <div id="cartBadge" class="cart-badge">0</div>
-        </a>
+<header id="mainHeader">
+  <div class="topbar">
+    <div class="brand">
+      <img src="/logo.jpeg" alt="شعار الرحيق" />
+      <div class="brand-text">
+        <h1>الرحيق</h1>
+        <p>من أكفان</p>
       </div>
     </div>
-  </header>
+    
+    <div class="hamburger-menu">
+      <button id="menuToggle">☰</button>
+    </div>
+    
+    <div class="cart-wishlist">
+      <a href="cart.html" class="cart-icon" title="سلة المشتريات">
+        <span>🛒</span>
+        <span class="text">السلة</span>
+        <div id="cartBadge" class="cart-badge">0</div>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- قائمة الهواتف المتحركة -->
+<div class="overlay" id="overlay"></div>
+<div class="mobile-nav" id="mobileNav">
+  <button class="close-menu" id="closeMenu">×</button>
+  <ul>
+    <li><a href="index.html">المتجر</a></li>
+    <li><a href="kafane.html">الأكفان</a></li>
+    <li><a href="#">القرآن</a></li>
+  </ul>
+</div>
 
   <main class="container">
     <h1 class="section-title">سلة المشتريات</h1>
@@ -698,13 +985,35 @@
 
   <!-- Modal for order confirmation -->
   <div id="orderModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content modal-success">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <div class="modal-icon">✅</div>
       <h2>تم استلام طلبك بنجاح!</h2>
       <p>سيتم التواصل معك قريباً لتأكيد الطلب وتفاصيل الشحن.</p>
       <div class="modal-buttons">
         <button class="modal-btn modal-btn-primary" onclick="closeModal()">موافق</button>
       </div>
     </div>
+  </div>
+
+  <!-- Modal for errors -->
+  <div id="errorModal" class="modal">
+    <div class="modal-content modal-error">
+      <button class="modal-close" onclick="closeErrorModal()">×</button>
+      <div class="modal-icon">❌</div>
+      <h2>حدث خطأ</h2>
+      <p id="errorMessage">تعذر إرسال الطلب. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة.</p>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-primary" onclick="closeErrorModal()">حاول مرة أخرى</button>
+        <button class="modal-btn modal-btn-secondary" onclick="window.open('https://wa.me/212680899888', '_blank')">اتصل بنا</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p>جاري معالجة طلبك...</p>
   </div>
 
   <script>
@@ -801,6 +1110,37 @@
       updateBadge();
     }
 
+    // دالة للتحقق من صحة النموذج
+    function validateForm() {
+      let isValid = true;
+      const form = document.getElementById('checkoutForm');
+      const inputs = form.querySelectorAll('input[required], textarea[required]');
+      
+      // إعادة تعيين أخطاء سابقة
+      document.querySelectorAll('.form-group').forEach(group => {
+        group.classList.remove('error');
+      });
+      
+      // التحقق من الحقول المطلوبة
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          isValid = false;
+          const formGroup = input.closest('.form-group');
+          formGroup.classList.add('error');
+        }
+      });
+      
+      // التحقق من صحة البريد الإلكتروني إذا تم إدخاله
+      const email = document.getElementById('email');
+      if (email.value.trim() && !/\S+@\S+\.\S+/.test(email.value)) {
+        isValid = false;
+        const formGroup = email.closest('.form-group');
+        formGroup.classList.add('error');
+      }
+      
+      return isValid;
+    }
+
     // دالة لعرض محتويات السلة ونموذج الدفع
     function renderCheckout() {
       const cart = readCart();
@@ -859,24 +1199,29 @@
             <h2>معلومات العميل</h2>
             <form id="checkoutForm">
               <div class="form-group">
-                <label for="fullname">الاسم الكامل</label>
+                <label for="fullname">الاسم الكامل *</label>
                 <input type="text" id="fullname" required>
+                <div class="form-error">يرجى إدخال الاسم الكامل</div>
               </div>
               <div class="form-group">
-                <label for="phone">رقم الهاتف</label>
+                <label for="phone">رقم الهاتف *</label>
                 <input type="tel" id="phone" required>
+                <div class="form-error">يرجى إدخال رقم الهاتف</div>
               </div>
               <div class="form-group">
                 <label for="email">البريد الإلكتروني (اختياري)</label>
                 <input type="email" id="email">
+                <div class="form-error">يرجى إدخال بريد إلكتروني صحيح</div>
               </div>
               <div class="form-group">
-                <label for="address">العنوان</label>
+                <label for="address">العنوان *</label>
                 <textarea id="address" rows="2" required></textarea>
+                <div class="form-error">يرجى إدخال العنوان</div>
               </div>
               <div class="form-group">
-                <label for="city">المدينة</label>
+                <label for="city">المدينة *</label>
                 <input type="text" id="city" required>
+                <div class="form-error">يرجى إدخال المدينة</div>
               </div>
               
               <h2>طريقة الدفع</h2>
@@ -893,7 +1238,7 @@
                 </label>
               </div>
               
-              <button type="submit" class="checkout-btn">تأكيد الطلب</button>
+              <button type="submit" class="checkout-btn" id="submitOrder">تأكيد الطلب</button>
             </form>
           </div>
           
@@ -928,11 +1273,24 @@
     function handleCheckout(e) {
       e.preventDefault();
       
-      const cart = readCart();
-      if (cart.length === 0) {
-        alert('السلة فارغة');
+      // التحقق من صحة النموذج
+      if (!validateForm()) {
         return;
       }
+      
+      const cart = readCart();
+      if (cart.length === 0) {
+        showErrorModal('السلة فارغة. يرجى إضافة منتجات قبل إكمال الطلب.');
+        return;
+      }
+      
+      // تعطيل زر الإرسال لمنع النقر المتعدد
+      const submitBtn = document.getElementById('submitOrder');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'جاري المعالجة...';
+      
+      // إظهار شاشة التحميل
+      showLoading();
       
       // جمع بيانات النموذج
       const formData = {
@@ -974,6 +1332,9 @@
       // إرسال الرسالة إلى Telegram
       sendTelegramMessage(message)
         .then(() => {
+          // إخفاء شاشة التحميل
+          hideLoading();
+          
           // إظهار رسالة النجاح
           showModal();
           
@@ -987,8 +1348,15 @@
           }, 3000);
         })
         .catch(error => {
+          // إخفاء شاشة التحميل
+          hideLoading();
+          
+          // إعادة تمكين زر الإرسال
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'تأكيد الطلب';
+          
           console.error('Error sending message:', error);
-          alert('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة.');
+          showErrorModal('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة.');
         });
     }
 
@@ -1017,19 +1385,71 @@
 
     // دالة لإظهار نافذة التأكيد
     function showModal() {
-      document.getElementById('orderModal').style.display = 'flex';
+      document.getElementById('orderModal').classList.add('active');
     }
 
     // دالة لإغلاق نافذة التأكيد
     function closeModal() {
-      document.getElementById('orderModal').style.display = 'none';
+      document.getElementById('orderModal').classList.remove('active');
+    }
+
+    // دالة لإظهار نافذة الخطأ
+    function showErrorModal(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorModal').classList.add('active');
+    }
+
+    // دالة لإغلاق نافذة الخطأ
+    function closeErrorModal() {
+      document.getElementById('errorModal').classList.remove('active');
+    }
+
+    // دالة لإظهار شاشة التحميل
+    function showLoading() {
+      document.getElementById('loadingOverlay').classList.add('active');
+    }
+
+    // دالة لإخفاء شاشة التحميل
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.remove('active');
     }
 
     // تهيئة الصفحة عند التحميل
     document.addEventListener('DOMContentLoaded', () => {
       updateBadge();
       renderCheckout();
+      
+      // إضافة تأثير التمرير للهيدر
+      const header = document.getElementById('mainHeader');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          header.classList.add('header-scrolled');
+        } else {
+          header.classList.remove('header-scrolled');
+        }
+      });
     });
+
+    // القائمة المتنقلة
+    const menuToggle = document.getElementById('menuToggle');
+    const closeMenu = document.getElementById('closeMenu');
+    const mobileNav = document.getElementById('mobileNav');
+    const overlay = document.getElementById('overlay');
+
+    menuToggle.addEventListener('click', () => {
+      mobileNav.classList.add('active');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeMobileMenu() {
+      mobileNav.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    closeMenu.addEventListener('click', closeMobileMenu);
+    overlay.addEventListener('click', closeMobileMenu);
   </script>
 </body>
 </html>
